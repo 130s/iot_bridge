@@ -29,4 +29,4 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 set -e  # Catch any error https://stackoverflow.com/a/12337030/577001
-./test/install_openhab.sh
+./test/test_openhab_bridge/install_openhab.sh

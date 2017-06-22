@@ -36,17 +36,17 @@ echo "deb http://ppa.launchpad.net/webupd8team/java/ubuntu xenial main" | sudo t
 echo "deb-src http://ppa.launchpad.net/webupd8team/java/ubuntu xenial main" | sudo tee -a /etc/apt/sources.list.d/webupd8team-java.list
 sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys EEA14886
 sudo apt-get update
-sudo apt-get install oracle-java8-installer
-sudo apt-get install oracle-java8-set-default
+sudo apt-get install -y oracle-java8-installer
+sudo apt-get install -y oracle-java8-set-default
 java -version
 
 wget -qO - 'https://bintray.com/user/downloadSubjectPublicKey?username=openhab' | sudo apt-key add -
-sudo apt-get install apt-transport-https
+sudo apt-get install -y apt-transport-https
 
 echo 'deb https://dl.bintray.com/openhab/apt-repo2 stable main' | sudo tee /etc/apt/sources.list.d/openhab2.list
 
 sudo apt-get update
-sudo apt-get install openhab2 openhab2-addons systemd
+sudo apt-get install -y openhab2 openhab2-addons systemd
 
 set -x
 ls -al /etc/systemd/system/multi-user.target.wants  # debug only
