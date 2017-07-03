@@ -293,7 +293,7 @@ class IotCommands(object):
                 self.update_count,
                 self.command_count,
                 self.error_count)
-            self.update_server("ROS_Status", val, isCommand=False)
+            self.update_server("ROS", val, isCommand=False)
 
     def command_cb(self, data):
         """
