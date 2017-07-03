@@ -97,8 +97,11 @@ class IotUpdates(object):
             self.prev_state_dict.clear()
 
     def request_item(self, name):
-        """ Get state for any item in group ROS from OpenHAB.
-            Response comes back as JSON. ROS publish any that changed
+        """
+        @summary: Get state for any item in group ROS from OpenHAB.
+                  Response comes back as JSON. ROS publish any that
+                  changed.
+        @param name: Item on openHAB server.
         """
         server_good = True  # Set as good response and clear if error
         # We will get all items in group ROS
@@ -241,9 +244,11 @@ class IotCommands(object):
 
     def update_server(self, key, value, isCommand):
         """
-        Send update to OpenHAB
+        @summary: Send update to OpenHAB
             POST if it's a command
             PUT  if it's a state update
+        @type key: str
+        @type value: str?
         """
         http_status = 200
         try:
@@ -276,8 +281,9 @@ class IotCommands(object):
 
     def send_stats(self, force):
         """
-        Send our statistics to OpenHAB. Only sends once per minute unless
-        "force" is true
+        @summary: Send our statistics to OpenHAB. Only sends once per minute
+                  unless "force" is true
+        @type force: bool
         """
         current_time = time.time()
         if force or current_time > self.next_send_time:
@@ -291,10 +297,11 @@ class IotCommands(object):
 
     def command_cb(self, data):
         """
-        Callback: rcvd command from ROS. POST command to
-        OpenHAB REST API for device to do something.
-        Special case: If key is "ROS_COMMAND", handle as
-        a command to us to do something special
+        @summary: Callback: rcvd command from ROS. POST command to
+                  OpenHAB REST API for device to do something.
+                  Special case: If key is "ROS_COMMAND", handle as
+                  a command to us to do something special
+        @type data: diagnostic_msgs.KeyValue
         """
         # This is a command to us for special handling
         if data.key == "ROS_COMMAND":
@@ -315,8 +322,9 @@ class IotCommands(object):
 
     def set_cb(self, data):
         """
-        Callback: rcvd status update from ROS. PUT status to
-        OpenHAB REST API to update the state of a device
+        @summary: Callback: rcvd status update from ROS. PUT status to
+                  OpenHAB REST API to update the state of a device
+        @type data: diagnostic_msgs.KeyValue
         """
         self.update_server(data.key, data.value, isCommand=False)
         self.command_count += 1
