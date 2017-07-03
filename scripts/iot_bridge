@@ -197,10 +197,41 @@ class IotCommands(object):
             '%s:%s' % (self.params.username, self.params.password)
             ).replace('\n', '')
         self.upd = IotUpdates(self, self.params)
-        self.command_count = 0
-        self.error_count = 0
-        self.update_count = 0
+        self._command_count = 0
+        self._error_count = 0
+        self._update_count = 0
         self.send_stats(True)  # Send initial stat update
+
+    def _int_count_setter(self, value, variable):
+        if isinstance(value, int) or (isinstance(value, float) and
+                                      value.is_integer()):
+                self.variable = int(value)
+        else:
+            raise TypeError("'{}' must be an integer".format(variable))
+
+    @property
+    def command_count(self):
+        return self._command_count
+
+    @command_count.setter
+    def command_count(self, value):
+        self._int_count_setter(value, self._command_count)
+
+    @property
+    def error_count(self):
+        return self._error_count
+
+    @error_count.setter
+    def error_count(self, value):
+        self._int_count_setter(value, self._error_count)
+
+    @property
+    def update_count(self):
+        return self._update_count
+
+    @update_count.setter
+    def update_count(self, value):
+        self._int_count_setter(value, self._update_count)
 
     def basic_header(self):
         """ Header for OpenHAB REST request - standard """
