@@ -1,7 +1,12 @@
 <launch>
+  <!-- iot.launch exists only for backward compatibility between
+       the version prior to 0.9.0 -->
+
   <arg name="configfile" default="$(find iot_bridge)/config/items.yaml" />
+  <arg name="iot_server_launchfile"
+       default="$(find iot_bridge)/launch/openhab.launch" />
   
-  <node name="iot" pkg="iot_bridge" type="iot_bridge" output="screen">
-    <rosparam file="$(arg configfile)" command="load" />
-  </node>
+  <include file="$(arg iot_server_launchfile)"> 
+    <arg name="configfile" value="$(arg configfile)" />
+  </include>
 </launch>

@@ -1,0 +1,7 @@
+<launch>
+  <arg name="configfile" default="$(find iot_bridge)/config/items.yaml" />
+
+  <node pkg="iot_bridge" type="openhab.py" name="iot" output="screen">
+    <rosparam file="$(arg configfile)" command="load" />
+  </node>
+</launch>

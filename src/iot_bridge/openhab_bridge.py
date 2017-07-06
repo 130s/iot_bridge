@@ -1,4 +1,3 @@
-#!/usr/bin/python
 '''
 Copyright (c) 2015, Answer17.  All rights reserved.
 All rights reserved.
@@ -46,9 +45,9 @@ Provide a bridge between ROS and the OpenHAB home automation system:
 
 The bridge:
     - Passes updates from OpenHAB IoT items to the ROS Robot Operating
-      System (IotUpdates)
+      System (OpenHabUpdates)
     - Passes updates and commands from ROS topic to OpenHAB IoT items
-      (IotCommands)
+      (OpenHabCommands)
 '''
 
 BASENAME = "iot"
@@ -60,7 +59,34 @@ PKG_NAME = 'iot_bridge'
 POLL_RATE = 2    # Rate that we poll server in seconds
 
 
-class IotUpdates(object):
+class OpenHabCommon(object):
+    def extract_content(self, content):
+        """ extract the "members" or "items" from content, and make a list """
+        # sitemap items have "id" and "widget" keys. "widget is a list of "item" dicts. no "type" key.
+        # items items have a "type" key which is something like "ColorItem", "DimmerItem" and so on, then "name" and "state". they are dicts
+        # items groups have a "type" "GroupItem", then "name" and "state" (of the group) "members" is a list of item dicts as above
+
+        if "type" in content:                   #items response
+            if content["type"] == "GroupItem":
+                # At top level (for GroupItem), there is type, name, state, link and members list
+                members = content["members"]    #list of member items
+            elif content["type"] == "item":
+                members = content["item"]       #its a single item dict *not sure this is a thing* 
+            else:
+                members = content               #its a single item dict
+        elif "widget" in content:               #sitemap response
+            members = content["widget"]["item"] #widget is a list of items, (could be GroupItems) these are dicts
+        elif "item" in content:
+            members = content["item"]           #its a single item dict
+        else:
+            members = content                   #don't know...
+        #log.debug(members)
+        if isinstance(members, dict):   #if it's a dict not a list
+            members = [members]         #make it a list (otherwise it's already a list of items...)
+        return members
+
+
+class OpenHabUpdates(OpenHabCommon):
     '''
     Handle messages from OpenHAB to ROS:
         Send polling request to OpenHAB REST interface
@@ -181,7 +207,7 @@ class IotParams(object):
         self.poll_rate = rospy.get_param(BASENAME + '/pollrate', 2)
 
 
-class IotCommands(object):
+class OpenHabCommands(OpenHabCommon):
     """
     Handle messages from ROS to OpenHAB:
     Subscribe to ROS topics: iot_command, and iot_set
@@ -199,7 +225,7 @@ class IotCommands(object):
         self.auth = base64.encodestring(
             '%s:%s' % (self.params.username, self.params.password)
             ).replace('\n', '')
-        self.upd = IotUpdates(self, self.params)
+        self.upd = OpenHabUpdates(self, self.params)
         self._command_count = 0
         self._error_count = 0
         self._update_count = 0
@@ -349,7 +375,7 @@ def main():
     rp = RosPack()
     rospy.loginfo("%s version %s started" %(
         PKG_NAME, rp.get_manifest(PKG_NAME).version))
-    cmd = IotCommands()   # Start up ROS subscribers with callbacks
+    cmd = OpenHabCommands()   # Start up ROS subscribers with callbacks
     while not rospy.is_shutdown():
         if cmd.upd.request_item(GROUP_NAME):   #  poll for OpenHAB updates
             # Successful, reset retry_delay to initial value
@@ -363,6 +389,3 @@ def main():
             if retry_delay * 2 <= MAX_DELAY:
                 retry_delay = retry_delay * 2  # slow down the more we fail
         time.sleep(cmd.params.poll_rate)  # Sleep N seconds between polls
-
-if __name__ == "__main__":
-    main()

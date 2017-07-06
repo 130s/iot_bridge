@@ -4,7 +4,7 @@ project(iot_bridge)
 find_package(catkin REQUIRED COMPONENTS diagnostic_msgs
 )
 
-# catkin_python_setup()
+catkin_python_setup()
 
 catkin_package(
 #  INCLUDE_DIRS include
@@ -18,7 +18,7 @@ include_directories(
 )
 
 install(PROGRAMS
-   scripts/iot_bridge
+   scripts/openhab.py
    scripts/sample/openhab_test
    scripts/sample/iot_test
    DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
