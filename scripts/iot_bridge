@@ -251,33 +251,41 @@ class IotCommands(object):
         @type value: str?
         """
         http_status = 200
-        try:
-            if isCommand:
-                # POST command to item name
-                msg = "ROS to OH: sending cmd %s to %s" % (value, key)
-                rospy.logdebug(msg)
-                url = 'http://%s:%s/rest/items/%s' % (
-                    self.params.iot_host, self.params.iot_port, key)
-                req = requests.post(
+        if isCommand:
+            # POST command to item name
+            msg = "ROS to OH: sending cmd %s to %s" % (value, key)
+            rospy.logdebug(msg)
+            url = 'http://%s:%s/rest/items/%s' % (
+                self.params.iot_host, self.params.iot_port, key)
+            req = requests.post(
                     url, data=value, headers=self.basic_header())
-            else:
-                # PUT state update to item state
-                msg = "ROS to OH: set state for %s to %s" % (key, value)
-                rospy.logdebug(msg)
-                url = 'http://%s:%s/rest/items/%s/state' % (
-                    self.params.iot_host, self.params.iot_port, key)
-                req = requests.put(url, data=value, headers=self.basic_header())
-                http_status = req.status_code
-                if http_status != requests.codes.ok:
-                    req.raise_for_status()
-        except Exception as err:
-            rospy.logwarn(msg)  # Display the request we sent
-            rospy.logwarn(err)  # Display the error we got
-            self.error_count += 1
-            if http_status == 404:
-                rospy.logwarn("Is %s a valid OpenHAB item?" % key)
-            if http_status == 400:
-                rospy.logwarn("Is %s a valid value for %s" % (value, key))
+            try:
+                req.raise_for_status()
+            except requests.HTTPError as err:
+                # TODO needs to catch specific exception type.
+                rospy.logwarn(msg)  # Display the request we sent
+                rospy.logerr(err)   # Display the error we got
+                self.error_count += 1
+                rospy.logdebug(err.__class__.__name__)
+        else:
+            # PUT state update to item state
+            msg = "ROS to OH: set state for %s to %s" % (key, value)
+            rospy.logdebug(msg)
+            url = 'http://%s:%s/rest/items/%s/state' % (
+                self.params.iot_host, self.params.iot_port, key)
+            req = requests.put(
+                url, data=value, headers=self.basic_header())
+            http_status = req.status_code
+            try:
+                req.raise_for_status()
+            except requests.HTTPError as err:
+                self.error_count += 1
+                rospy.logwarn(msg)  # Display the request we sent
+                rospy.logerr(err)   # Display the error we got
+                if http_status == 404:
+                    rospy.logwarn("Is %s a valid OpenHAB item?" % key)
+                elif http_status == 400:
+                    rospy.logwarn("Is %s a valid value for %s" % (value, key))
 
     def send_stats(self, force):
         """
