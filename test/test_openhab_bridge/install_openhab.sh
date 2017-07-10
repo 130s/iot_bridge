@@ -36,6 +36,10 @@ echo "deb http://ppa.launchpad.net/webupd8team/java/ubuntu xenial main" | sudo t
 echo "deb-src http://ppa.launchpad.net/webupd8team/java/ubuntu xenial main" | sudo tee -a /etc/apt/sources.list.d/webupd8team-java.list
 sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys EEA14886
 sudo apt-get update
+# For https://github.com/130s/iot_bridge/pull/4#issuecomment-314258529
+# see https://askubuntu.com/questions/190582/installing-java-automatically-with-silent-option
+echo "oracle-java8-installer shared/accepted-oracle-license-v1-1 select true" | sudo debconf-set-selections
+echo "oracle-java8-installer shared/accepted-oracle-license-v1-1 seen true" | sudo debconf-set-selections
 sudo apt-get install -y oracle-java8-installer
 sudo apt-get install -y oracle-java8-set-default
 java -version
