@@ -56,12 +56,14 @@ set -x
 ls -al /etc/systemd/system/multi-user.target.wants  # debug only
 ls -al /usr/lib/systemd/system                      # debug only
 
-## With industrial_ci as of today pre-process does not run on docker https://github.com/ros-industrial/industrial_ci/issues/183, so we need to fall back on to sysVinit (e.g. Ubuntu 14.x)
-#sudo /bin/systemctl daemon-reload
-#sudo /bin/systemctl enable openhab2.service
-#sudo /bin/systemctl start openhab2.service
-#sudo systemctl status openhab2.service
+## 20170701 With industrial_ci as of today pre-process does not run on docker https://github.com/ros-industrial/industrial_ci/issues/183, so we need to fall back on to sysVinit (e.g. Ubuntu 14.x)
+## 20170710 Found a way pre-process runs on docker.
+sudo /bin/systemctl daemon-reload
+sudo /bin/systemctl enable openhab2.service
+sudo /bin/systemctl start openhab2.service
+sudo systemctl status openhab2.service
 
-sudo /etc/init.d/openhab2 start
-sudo /etc/init.d/openhab2 status
-sudo update-rc.d openhab2 defaults
+## 20170710 Found a way pre-process runs on docker. So the following 3 lines are not needed.
+#sudo /etc/init.d/openhab2 start
+#sudo /etc/init.d/openhab2 status
+#sudo update-rc.d openhab2 defaults

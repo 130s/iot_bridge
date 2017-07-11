@@ -29,4 +29,17 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 set -e  # Catch any error https://stackoverflow.com/a/12337030/577001
-./test/test_openhab_bridge/setup_server_demo.sh
+
+# Download openHAB demo
+sudo apt-get install -y curl 
+TARBALL_OPENHAB_DEMO='https://openhab.ci.cloudbees.com/job/openHAB-Distribution/lastSuccessfulBuild/artifact/distributions/openhab/target/openhab-2.2.0-SNAPSHOT.zip'
+cd /tmp && { curl -O TARBALL_OPENHAB_DEMO; cd -; }
+
+# Set addons.cfg.
+sudo mv /etc/openhab2/services/addons.cfg /etc/openhab2/services/addons.cfg.org
+sudo cp addons_demo.cfg /etc/openhab2/services
+
+# Activate with the changed just added.
+sudo /etc/init.d/openhab2 restart
+
+# That's it for activating demo addons, which you can check at http://localhost:8080/rest/items

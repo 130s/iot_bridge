@@ -29,4 +29,9 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 set -e  # Catch any error https://stackoverflow.com/a/12337030/577001
-./test/test_openhab_bridge/setup_server_demo.sh
+
+# 20170710 http://stackoverflow.com/questions/59895/can-a-bash-script-tell-what-directory-its-stored-in
+DIR_THIS="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+$DIR_THIS/./install_openhab.sh
+$DIR_THIS/./setup_addon.sh
