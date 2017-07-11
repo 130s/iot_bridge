@@ -1,0 +1,16 @@
+<launch>
+  <!-- This test assumes that OpenHAB demo server is already installed
+       and running with demo addons, which can be done by
+       iot_bridge/.ci_preprocess.sh.
+       Though a bit counter-intuitive and not portable, running such an
+       installation process during test is not common IMO. -->
+
+  <arg name="configfile" default="$(find iot_bridge)/config/items.yaml" />
+
+  <include file="$(find iot_bridge)/launch/iot.launch"
+           pass_all_args="true" />
+
+  <test pkg="iot_bridge" type="test_openhab_bridge.py" time-limit="300"
+        retry="2" test-name="openhab_testcases" args="" />
+
+</launch>

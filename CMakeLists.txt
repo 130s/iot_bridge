@@ -17,7 +17,7 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
-install(PROGRAMS
+catkin_install_python(PROGRAMS
    scripts/openhab.py
    scripts/sample/openhab_test
    scripts/sample/iot_test
@@ -35,4 +35,5 @@ if (CATKIN_ENABLE_TESTING)
   find_package(catkin REQUIRED COMPONENTS roslaunch)
   roslaunch_add_file_check(launch)
   add_rostest(test/bridge.test)
+  add_rostest(test/test_openhab_bridge/openhab_bridge.test)
 endif()
