@@ -33,11 +33,11 @@ set -e  # Catch any error https://stackoverflow.com/a/12337030/577001
 # Download openHAB demo
 sudo apt-get install -y curl 
 TARBALL_OPENHAB_DEMO='https://openhab.ci.cloudbees.com/job/openHAB-Distribution/lastSuccessfulBuild/artifact/distributions/openhab/target/openhab-2.2.0-SNAPSHOT.zip'
-cd /tmp && { curl -O TARBALL_OPENHAB_DEMO; cd -; }
+cd /tmp && { curl --retry 3 --retry-delay 5 --retry-max-time 120 -O ${TARBALL_OPENHAB_DEMO}; cd -; }
 
-# Set addons.cfg.
+# Set demo version of addons.cfg.
 sudo mv /etc/openhab2/services/addons.cfg /etc/openhab2/services/addons.cfg.org
-sudo cp addons_demo.cfg /etc/openhab2/services
+sudo cp ./test/test_openhab_bridge/addons_demo.cfg /etc/openhab2/services || (echo "This script intends to be run from the package top dir. Exitting."; exit 1);
 
 # Activate with the changed just added.
 sudo /etc/init.d/openhab2 restart
